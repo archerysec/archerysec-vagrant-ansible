@@ -4,7 +4,7 @@ Vagrant and VirtualBox can be used to quickly build or rebuild virtual servers.
 
 This example installs Ansible's ArcherySec Project on a Ubuntu VM, so you can test and run ArcherySec.
 
-## Pre-requisite
+## Prerequisite
 
 - VirtualBox
 - Vagrant
