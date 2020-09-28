@@ -132,19 +132,6 @@
     port: 8000
     delay: 15
 
-- name: check user existed?
-  command: echo "from django.contrib.auth import get_user_model; User = get_user_model(); print(User.objects.filter(username='{{admin_user}}').count()>0)" | {{ install_root }}/envs/bin/python ./manage.py shell
-  args:
-    chdir: "{{ install_root }}"
-  environment:
-    DJANGO_SETTINGS_MODULE: "{{django_settings_module}}"
-    DB_NAME: "{{db_name}}"
-    DB_USER: "{{db_user}}"
-    DB_PASSWORD: "{{db_password}}"
-    DB_HOST: "{{db_host}}"
-    DJANGO_SECRET_KEY: "{{django_secret_key}}"
-  register: user_existed
-
 - name: Create a User
   uri:
     url: http://127.0.0.1:8000/api/createuser/
@@ -153,7 +140,7 @@
     body_format: json
   retries: 5
   delay: 3
-  when: not user_existed
+  ignore_errors: True
 
 - name: Change password tricks
   template: src=changepassword.sh.j2 dest={{ install_root }}/changepassword.sh mode=0755
