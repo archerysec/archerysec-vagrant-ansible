@@ -42,7 +42,7 @@ Vagrant.configure("2") do |config|
   SHELL
 
   config.vm.provision "ansible_local" do |ansible|
-    ansible.version = "2.9.13"
+    ansible.version = "2.9.14"
     ansible.playbook = "playbook.yml"
     ansible.verbose = true
   end
