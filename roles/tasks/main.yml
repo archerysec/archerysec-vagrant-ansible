@@ -60,9 +60,13 @@
 
 - name: Install dependencies
   pip:
-    requirements: "{{ app_dir }}/requirements_setup.txt"
+    requirements: "{{ app_dir }}/requirements.txt"
     virtualenv: "{{ venv_dir }}"
     virtualenv_python: python3.6
+
+- name: Install Openvas python lib
+  shell: ". {{ install_root }}/envs/bin/activate && python3 -m pip install git+https://github.com/archerysec/openvas_lib.git "
+  become: yes
 
 - name: Make migrations
   shell: ". {{ install_root }}/envs/bin/activate && {{venv_python}} {{ app_dir }}/manage.py makemigrations "
