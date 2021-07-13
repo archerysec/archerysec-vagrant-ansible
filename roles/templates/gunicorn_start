@@ -48,6 +48,9 @@ export DJANGO_DEBUG=0
 # migrate database
 python3 '{{ app_dir }}'/manage.py migrate
 
+# Collect static files
+python3 '{{ app_dir }}'/manage.py collectstatic
+
 ### Start Gunicorn
 
 exec gunicorn ${DJANGO_WSGI_MODULE}:application \
