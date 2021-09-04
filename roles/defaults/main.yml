@@ -37,8 +37,8 @@ pythonpath: "{{ install_root }}"
 project_repo: https://github.com/archerysec/archerysec/archive/v{{archerysec_version}}.tar.gz
 
 # Application Dependencies Setup
-venv_dir: "{{ install_root }}/envs"
-venv_python: '{{ venv_dir }}/bin/python3.6'
+venv_dir: "{{ install_root }}/venv"
+venv_python: '{{ venv_dir }}/bin/python3'
 
 # The value of your django project's STATIC_ROOT settings.
 # This will be the directory that django's `collectstatic` management command
@@ -87,6 +87,6 @@ wsgi_server_port: 8000
 mail_host: 0.0.0.0
 mail_port: 1025
 
-admin_user: "admin"
-admin_email: "admin@archerysec.lab"
+admin_user: "archerysec"
+admin_email: "archerysec@archerysec.lab"
 admin_pass: "test@123A"

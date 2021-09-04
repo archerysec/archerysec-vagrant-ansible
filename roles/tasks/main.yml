@@ -7,7 +7,8 @@
       - postgresql
       - virtualenv
       - postgresql-server-dev-all
-      - python-pip
+      - python3-pip
+      - python3-venv
       - python3-dev
       - python-dev
       - python-psycopg2
@@ -53,28 +54,20 @@
   become_user: postgres
   postgresql_user: db={{ db_name }} name={{ db_user }} password={{ db_password }} priv=ALL
 
-- name: Create a virtualenv directory
-  file:
-    path: "{{ venv_dir }}"
-    state: directory
-
-- name: Install dependencies
-  pip:
-    requirements: "{{ app_dir }}/requirements.txt"
-    virtualenv: "{{ venv_dir }}"
-    virtualenv_python: python3.6
-
-- name: Install Openvas python lib
-  shell: ". {{ install_root }}/envs/bin/activate && python3 -m pip install git+https://github.com/archerysec/openvas_lib.git "
-  become: yes
-
-- name: Make migrations
-  shell: ". {{ install_root }}/envs/bin/activate && {{venv_python}} {{ app_dir }}/manage.py makemigrations "
-  become: yes
-
-- name: Migrate database
-  shell: ". {{ install_root }}/envs/bin/activate && {{venv_python}} {{ app_dir }}/manage.py migrate "
-  become: yes
+- name: Run ArcherySec Setup File
+  command: "{{ install_root }}/setup.sh"
+  args:
+    chdir: "{{ install_root }}"
+  environment:
+    DJANGO_SETTINGS_MODULE: "{{django_settings_module}}"
+    DB_NAME: "{{db_name}}"
+    DB_USER: "{{db_user}}"
+    DB_PASSWORD: "{{db_password}}"
+    DB_HOST: "{{db_host}}"
+    DJANGO_SECRET_KEY: "{{django_secret_key}}"
+    NAME: "{{admin_user}}"
+    EMAIL: "{{admin_email}}"
+    PASSWORD: "{{admin_pass}}"
 
 - name: Create a deploy directory
   file: path={{ deploy_dir }} state=directory
@@ -135,31 +128,3 @@
   wait_for:
     port: 8000
     delay: 15
-
-- name: Create a User
-  uri:
-    url: http://127.0.0.1:8000/api/createuser/
-    method: POST
-    body: "{'username':'{{admin_user}}','password':'{{admin_pass}}', 'email':'{{admin_email}}'}"
-    body_format: json
-  retries: 5
-  delay: 3
-  ignore_errors: True
-
-- name: Change password tricks
-  template: src=changepassword.sh.j2 dest={{ install_root }}/changepassword.sh mode=0755
-
-- name: Change password tricks
-  command: "{{ install_root }}/changepassword.sh"
-  args:
-    chdir: "{{ install_root }}"
-  environment:
-    DJANGO_SETTINGS_MODULE: "{{django_settings_module}}"
-    DB_NAME: "{{db_name}}"
-    DB_USER: "{{db_user}}"
-    DB_PASSWORD: "{{db_password}}"
-    DB_HOST: "{{db_host}}"
-    DJANGO_SECRET_KEY: "{{django_secret_key}}"
-
-- name: remove changepassword.sh
-  file: path="{{ install_root }}/changepassword.sh" state=absent
